@@ -1,26 +1,37 @@
+import sys
 import os
+import shutil
 from copystatic import (prepare_destination,copy_files_recursive)
 from gencontent import (generate_page, generate_pages_recursive)
 
 
-def main():
-    source = "static"
-    destination = "public"
-    prepare_destination(destination)
-    copy_files_recursive(source,destination)
-    dir_path_static = "./static"
-    dir_path_public = "./public"
-    dir_path_content = "./content"
-    template_path = "./template.html"
 
-    print("Generating page...")
-    generate_page(
-        os.path.join(dir_path_content, "index.md"),
-        template_path,
-        os.path.join(dir_path_public, "index.html"))
+dir_path_static = "./static"
+dir_path_content = "./content"
+template_path = "./template.html"
+dir_path_docs = "./docs"
+default_basepath = "/"
+
+
+def main():
+    basepath = default_basepath
+    if len(sys.argv) > 1:
+        basepath = sys.argv[1]
+
+
+
+    print("Deleting docs...")
+    if os.path.exists(dir_path_docs):
+        shutil.rmtree(dir_path_docs)
+    os.mkdir(dir_path_docs)
+
+    print("Copying static files to docs...")
+    copy_files_recursive(dir_path_static, dir_path_docs)
 
     print("Generating content...")
-    generate_pages_recursive(dir_path_content, template_path, dir_path_public)
+    generate_pages_recursive(dir_path_content, template_path, dir_path_docs,basepath)
+
+
 
 
 
